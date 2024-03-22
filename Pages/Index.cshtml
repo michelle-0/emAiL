@@ -17,3 +17,24 @@
         <p class="alert alert-success">@Model.Reply</p>
     }
 </div>
+<div class="chat-history">
+    <h4>Chat History</h4>
+    @if (Model.ChatHistories.Any())
+    {
+        <ul>
+            @foreach (var chat in Model.ChatHistories)
+            {
+                <li>
+                    <div><strong>User:</strong> @chat.UserMessage</div>
+                    <div><strong>AI Response:</strong> @chat.AIResponse</div>
+                    <div><small>@chat.Timestamp.ToString("g")</small></div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No chat history available.</p>
+    }
+</div>
+

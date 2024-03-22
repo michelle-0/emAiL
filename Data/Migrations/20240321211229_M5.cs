@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EfFuncCallSK.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class M1 : Migration
+    public partial class M5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -156,6 +156,28 @@ namespace EfFuncCallSK.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ChatHistories",
+                columns: table => new
+                {
+                    ChatId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    UserMessage = table.Column<string>(type: "TEXT", nullable: false),
+                    AIResponse = table.Column<string>(type: "TEXT", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatHistories", x => x.ChatId);
+                    table.ForeignKey(
+                        name: "ForeignKey_ChatHistory_User",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -192,6 +214,11 @@ namespace EfFuncCallSK.Data.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatHistories_UserId",
+                table: "ChatHistories",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -211,6 +238,9 @@ namespace EfFuncCallSK.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ChatHistories");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
