@@ -6,9 +6,28 @@
 <div class="text-center">
     <h3 class="display-6">@ViewData["Title"]</h3>
     <form method="post">
-        <input type="text" name="prompt" size="80" required />
-        <input type="submit" value="Submit" />
-    </form>
+    <div>
+        <label for="prompt">Enter your prompt:</label>
+        <input type="text" id="prompt" name="prompt" size="80" required />
+    </div>
+    <div>
+        <label for="formality">Formality Level:</label>
+        <select id="formality" name="Formality">
+            <option value="casual">Casual</option>
+            <option value="formal">Formal</option>
+            <option value="business">Business</option>
+        </select>
+    </div>
+    <div>
+        <label for="topic">Topic:</label>
+        <select id="topic" name="Topic">
+            <option value="apology">Apology</option>
+            <option value="proposal">Proposal</option>
+            <!-- Add other topics as needed -->
+        </select>
+    </div>
+    <input type="submit" value="Submit" />
+</form>
     <div style="text-align: left">
         <h5>Example prompts:</h5>
     </div>
