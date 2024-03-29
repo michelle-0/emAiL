@@ -67,7 +67,7 @@ public class ChatService
     {
         return await _context.ChatHistories
                              .Where(chat => chat.UserId == userId)
-                             .OrderBy(chat => chat.Timestamp) // Assuming chronological order is desired
+                             .OrderByDescending(chat => chat.Timestamp) // Assuming chronological order is desired
                              .ToListAsync();
     }
 }
