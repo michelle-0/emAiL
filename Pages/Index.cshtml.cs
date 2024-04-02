@@ -57,30 +57,6 @@ public class IndexModel : PageModel
         ChatHistories = await _chatService.GetChatHistoryByUserIdAsync(userId); // Refresh chat history
         return Page();
     }
-    //   private readonly ILogger<IndexModel> _logger;
-    //   private readonly IConfiguration _config;
-
-    //   [BindProperty]
-    //   public string? Reply { get; set; }
-
-    //   [BindProperty]
-    //   public string? Service { get; set; }
-
-    //   public List<ChatHistory> ChatHistories { get; set; } = new List<ChatHistory>();
-
-    //   public IndexModel(ILogger<IndexModel> logger, IConfiguration config) {
-    //     _logger = logger;
-    //     _config = config;
-    //     Service = _config["AIService"]!;
-    //   }
-    //   public void OnGet() { }
-    //   // action method that receives prompt from the form
-    //   public async Task<IActionResult> OnPostAsync(string prompt) {
-    //     // call the Azure Function
-    //     var response = await CallFunction(prompt);
-    //     Reply = response;
-    //     return Page();
-    //   }
 
     private async Task<string> CallFunction(string question)
     {
@@ -125,4 +101,22 @@ public class IndexModel : PageModel
         history.AddAssistantMessage(fullMessage);
         return fullMessage;
     }
+
+    public async Task<IActionResult> OnGetSearchAsync(string searchTerm)
+    {
+        string userId = _userManager.GetUserId(User); // Ensure the user is logged in and get their ID
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            // Perform the search and order by timestamp descending
+            ChatHistories = await _chatService.SearchChatHistoryAsync(userId, searchTerm);
+        }
+        else
+        {
+            // If no search term is provided, get the regular chat history
+            ChatHistories = await _chatService.GetChatHistoryByUserIdAsync(userId);
+        }
+
+        return Page(); // Stay on the same page, updating the ChatHistories model property
+    }
+
 }

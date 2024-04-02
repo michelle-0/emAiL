@@ -187,6 +187,25 @@ namespace EfFuncCallSK.Controllers
             return _context.ChatHistories.Any(e => e.ChatId == id);
         }
 
+        // =======Chat history search functionality=======
+        // This method should be named to reflect that it's an action for a GET request
+        // You can optionally use the [HttpGet] attribute to specify this is for GET requests
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            string userId = GetCurrentUserId(); // Implement this method if not already done
+            var results = await _context.ChatHistories
+                                        .Where(c => c.UserId == userId &&
+                                                    c.AIResponse.Contains(searchTerm))
+                                        .OrderByDescending(c => c.Timestamp)
+                                        .ToListAsync();
+
+            return View("Index", results); // Assuming you're reusing the Index view to display results
+        }
+
+
+
+
 
     }
 }

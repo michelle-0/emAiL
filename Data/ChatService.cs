@@ -70,5 +70,15 @@ public class ChatService
                              .OrderByDescending(chat => chat.Timestamp) // Assuming chronological order is desired
                              .ToListAsync();
     }
+
+    public async Task<List<ChatHistory>> SearchChatHistoryAsync(string userId, string searchTerm)
+{
+    return await _context.ChatHistories
+                         .Where(chat => chat.UserId == userId &&
+                                        chat.AIResponse.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                         .OrderByDescending(chat => chat.Timestamp)
+                         .ToListAsync();
+}
+
 }
 
