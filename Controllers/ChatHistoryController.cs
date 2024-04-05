@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using EfFuncCallSK.Data;
 using EfFuncCallSK.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EfFuncCallSK.Controllers
 {
@@ -53,6 +54,7 @@ namespace EfFuncCallSK.Controllers
             return View(chatHistories); // Make sure you have a corresponding view to display this list
         }
         // GET: ChatHistory
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.ChatHistories.ToListAsync());
@@ -167,7 +169,6 @@ namespace EfFuncCallSK.Controllers
             return View(chatHistory);
         }
 
-        // POST: ChatHistory/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -176,11 +177,11 @@ namespace EfFuncCallSK.Controllers
             if (chatHistory != null)
             {
                 _context.ChatHistories.Remove(chatHistory);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ChatHistoryExists(int id)
         {
