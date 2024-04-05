@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using EfFuncCallSK.Data;
 using EfFuncCallSK.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EfFuncCallSK.Controllers
 {
@@ -53,6 +54,7 @@ namespace EfFuncCallSK.Controllers
             return View(chatHistories); // Make sure you have a corresponding view to display this list
         }
         // GET: ChatHistory
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.ChatHistories.ToListAsync());
@@ -167,7 +169,6 @@ namespace EfFuncCallSK.Controllers
             return View(chatHistory);
         }
 
-        // POST: ChatHistory/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -176,16 +177,35 @@ namespace EfFuncCallSK.Controllers
             if (chatHistory != null)
             {
                 _context.ChatHistories.Remove(chatHistory);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ChatHistoryExists(int id)
         {
             return _context.ChatHistories.Any(e => e.ChatId == id);
         }
+
+        // =======Chat history search functionality=======
+        // This method should be named to reflect that it's an action for a GET request
+        // You can optionally use the [HttpGet] attribute to specify this is for GET requests
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            string userId = GetCurrentUserId(); // Implement this method if not already done
+            var results = await _context.ChatHistories
+                                        .Where(c => c.UserId == userId &&
+                                                    c.AIResponse.Contains(searchTerm))
+                                        .OrderByDescending(c => c.Timestamp)
+                                        .ToListAsync();
+
+            return View("Index", results); // Assuming you're reusing the Index view to display results
+        }
+
+
+
 
 
     }

@@ -757,6 +757,7 @@ progress {
   padding-left: calc(var(--bs-gutter-x) * 0.5);
   margin-right: auto;
   margin-left: auto;
+  display: flex;
 }
 
 @media (min-width: 576px) {
@@ -12139,4 +12140,14 @@ textarea.form-control-lg {
 .tooltip {
   --bs-tooltip-bg: var(--bs-tertiary-bg);
   --bs-tooltip-color: var(--bs-emphasis-color);
+}
+
+.chat-history {
+  max-height: 200px; /* Adjust as needed */
+  overflow-y: auto; /* Adds vertical scroll */
+  padding-bottom: 20px; /* Add some space at the bottom */
+}
+
+.footerstuff{
+  background-color: #000;
 }

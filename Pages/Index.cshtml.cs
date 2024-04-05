@@ -99,4 +99,22 @@ public class IndexModel : PageModel
         history.AddAssistantMessage(fullMessage);
         return fullMessage ;
     }
+
+    public async Task<IActionResult> OnGetSearchAsync(string searchTerm)
+    {
+        string userId = _userManager.GetUserId(User); // Ensure the user is logged in and get their ID
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            // Perform the search and order by timestamp descending
+            ChatHistories = await _chatService.SearchChatHistoryAsync(userId, searchTerm);
+        }
+        else
+        {
+            // If no search term is provided, get the regular chat history
+            ChatHistories = await _chatService.GetChatHistoryByUserIdAsync(userId);
+        }
+
+        return Page(); // Stay on the same page, updating the ChatHistories model property
+    }
+
 }
