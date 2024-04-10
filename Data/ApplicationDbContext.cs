@@ -27,5 +27,7 @@ public class ApplicationDbContext : IdentityDbContext // Assuming you have an Ap
     }
 
     public DbSet<ChatHistory> ChatHistories { get; set; }
+    public DbSet<Resume> Resumes { get; set; }
+    public DbSet<JobDescription> JobDescriptions { get; set; }
 
 }
