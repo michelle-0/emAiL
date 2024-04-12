@@ -1,0 +1,60 @@
+@page
+@model EfFuncCallSK.Pages.ResumeList
+@{
+    ViewData["Title"] = "ResumeList";
+}
+
+@{
+    ViewData["Title"] = "ResumeList";
+}
+
+<h1>Previous Resumes</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Resume ID</th>
+            <th>Full Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var resume in Model.resumes)
+        {
+            <tr>
+                <td>@resume.ResumeId</td>
+                <td>@resume.FullName</td>
+                <td>
+                    <a asp-page="ViewResume" asp-route-id="@resume.ResumeId">View Resume</a> |
+                    <a asp-page="View Job Description" asp-route-id="@resume.JobDescription.JobDescriptionId">View Cover Letter</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Application ID</th>
+                                <th>Company Name</th>
+                                <th>Job Title</th>
+                                <th>Application Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@resume.JobDescription.JobDescriptionId</td>
+                                <td>@resume.JobDescription.CompanyName</td>
+                                <td>@resume.JobDescription.JobTitle</td>
+                                <td>
+                                    <a asp-page="ViewApplication" asp-route-id="@resume.JobDescription.JobDescriptionId">View Application</a>
+                                </td>
+                            </tr>
+        
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

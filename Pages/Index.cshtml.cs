@@ -6,6 +6,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
+
 using EfFuncCallSK.Models;
 using Newtonsoft.Json;
 public class IndexModel : PageModel
