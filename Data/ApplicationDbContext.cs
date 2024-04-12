@@ -28,15 +28,10 @@ public class ApplicationDbContext : IdentityDbContext // Assuming you have an Ap
             {
                 entity.HasOne(r => r.JobDescription);
             });
-
-             modelBuilder.Entity<CoverLetter>(entity =>
-            {
-                entity.HasOne(j => j.JobDescription);
-            });
     }
 
     public DbSet<ChatHistory> ChatHistories { get; set; }
     public DbSet<Resume> Resumes { get; set; }
     public DbSet<JobDescription> JobDescriptions { get; set; }
-    public DbSet<CoverLetter> CoverLetters { get; set; }
+    // public DbSet<CoverLetter> CoverLetters { get; set; }
 }

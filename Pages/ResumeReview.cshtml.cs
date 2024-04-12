@@ -53,23 +53,21 @@ public class ResumeReviewModel : PageModel
             string JobRequirements)
         {
             var jobDescription = new JobDescription(CompanyName, JobTitle, jobResponsibilities, JobRequirements);
-            var resumeData = new Resume(fullName, email, experience, education, skills, projects);
-
+            var resumeData = new Resume(fullName, email, experience, education, skills, projects)
+            {
+                JobDescription = jobDescription
+            };
 
             var jsonResumeData = JsonConvert.SerializeObject(resumeData);
             var jsonJobDescription = JsonConvert.SerializeObject(jobDescription);
 
             var response = await CallFunction(jsonResumeData, jsonJobDescription);
+            var newJobDescription = new JobDescription(CompanyName, JobTitle, jobResponsibilities, JobRequirements);
 
-            var newResume = new Resume(fullName, email, experience, education, skills, projects)
-            {
-                JobDescription = jobDescription
-            };
-
-            _context.JobDescriptions.Add(jobDescription);
+            _context.JobDescriptions.Add(newJobDescription);
 
             // Add the created Resume entity to the Resumes DbSet
-            _context.Resumes.Add(newResume);
+            _context.Resumes.Add(resumeData);
 
             // Save changes to the database
             await _context.SaveChangesAsync();
