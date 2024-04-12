@@ -27,12 +27,11 @@ namespace EfFuncCallSK.Plugins
                 // Assuming 'resume' is now properly parsed, format the email
                 string emailBody = $"Dear Hiring Manager,\n\n" +
                                    $"I am excited to apply for the position described in your {jobDescription}. " +
-                                   $"With my skills in {resume.Skills} and my experience including {resume.Experience}, " +
+                                   $"With my skills in {resume.Skills} and my experience including {resume.Experiences}, " +
                                    $"I am confident that I would be a valuable addition to your team.\n\n" +
                                    $"Please find my detailed resume attached for more information.\n\n" +
                                    $"Best regards,\n" +
                                    $"{resume.FullName}";
-
                 return emailBody;
             }
             catch (JsonException ex)

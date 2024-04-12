@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfFuncCallSK.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240321211229_M5")]
-    partial class M5
+    [Migration("20240412113748_M1")]
+    partial class M1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,109 @@ namespace EfFuncCallSK.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ChatHistories");
+                });
+
+            modelBuilder.Entity("EfFuncCallSK.Models.CoverLetter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("JobDescriptionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobDescriptionId");
+
+                    b.ToTable("CoverLetters");
+                });
+
+            modelBuilder.Entity("EfFuncCallSK.Models.JobDescription", b =>
+                {
+                    b.Property<int>("JobDescriptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("JobRequirements")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("JobResponsibilities")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("JobDescriptionId");
+
+                    b.ToTable("JobDescriptions");
+                });
+
+            modelBuilder.Entity("EfFuncCallSK.Models.Resume", b =>
+                {
+                    b.Property<int>("ResumeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Education")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Experiences")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("JobDescriptionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Projects")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Skills")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ResumeId");
+
+                    b.HasIndex("JobDescriptionId");
+
+                    b.ToTable("Resumes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -254,6 +357,28 @@ namespace EfFuncCallSK.Data.Migrations
                         .HasConstraintName("ForeignKey_ChatHistory_User");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EfFuncCallSK.Models.CoverLetter", b =>
+                {
+                    b.HasOne("EfFuncCallSK.Models.JobDescription", "JobDescription")
+                        .WithMany()
+                        .HasForeignKey("JobDescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobDescription");
+                });
+
+            modelBuilder.Entity("EfFuncCallSK.Models.Resume", b =>
+                {
+                    b.HasOne("EfFuncCallSK.Models.JobDescription", "JobDescription")
+                        .WithMany()
+                        .HasForeignKey("JobDescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobDescription");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
