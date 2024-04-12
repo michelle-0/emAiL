@@ -5,6 +5,32 @@
     ViewData["Title"] = "Chat History";
 }
 
+<style>
+    .chat-history {
+        margin-top: 20px;
+        min-height: 370px;
+    }
+
+    .chat-history ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .chat-history li {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .chat-history li .stuff {
+        margin-top: 10px;
+    }
+
+    .stuff {
+        margin-top: 10px;
+    }
+    
+</style>
 <h3 class="display-6">@ViewData["Title"]</h3>
 
 <form method="get">
@@ -24,7 +50,7 @@
             {
                 <li>
                     <div><strong>User:</strong> @chat.UserMessage</div>
-                    <div><strong>AI Response:</strong> @chat.AIResponse</div>
+                    <div classname = "stuff"><strong>AI Response:</strong> @chat.AIResponse</div>
                     <div><small>@chat.Timestamp.ToString("g")</small></div>
                     <form method="post" asp-page-handler="Delete" asp-route-id="@chat.ChatId">
                         <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');" />
