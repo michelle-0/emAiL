@@ -5,6 +5,7 @@
 }
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,20 +15,25 @@
             display: block;
             margin-bottom: 5px;
         }
+
         .header {
             text-align: center;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
         }
-        input[type="text"], select {
+
+        input[type="text"],
+        select {
             width: calc(100% - 20px);
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         input[type="submit"] {
             padding: 10px 15px;
             background-color: #ffffff;
@@ -36,20 +42,25 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         input[type="submit"]:hover {
             background-color: #cac9c9;
         }
+
         .example-prompts {
             text-align: left;
             margin-top: 30px;
         }
+
         .nav-link {
             color: #337ab7;
             text-decoration: none;
         }
+
         .nav-link:hover {
             text-decoration: underline;
         }
+
         .alert {
             padding: 15px;
             background-color: #dff0d8;
@@ -63,33 +74,38 @@
             margin-bottom: 10px;
             align-items: center;
         }
-        .form-row > label {
+
+        .form-row>label {
             margin-right: 10px;
             white-space: nowrap;
         }
-        .form-row > input[type="text"],
-        .form-row > select {
-            flex: 1; 
-            margin-right: 10px; 
+
+        .form-row>input[type="text"],
+        .form-row>select {
+            flex: 1;
+            margin-right: 10px;
         }
-        .form-row > input[type="submit"] {
-            margin: 0; 
+
+        .form-row>input[type="submit"] {
+            margin: 0;
         }
-  
+
         .multi-field-row {
             display: flex;
             justify-content: space-between;
         }
 
         .field-group {
-            flex-basis: 48%; 
+            flex-basis: 48%;
         }
-        
-        input[type="text"], select {
-            margin-bottom: 0; 
+
+        input[type="text"],
+        select {
+            margin-bottom: 0;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -97,41 +113,27 @@
         </header>
 
         <main>
-            <form method="post" class="email-form">
-                <div class="form-row">
-                    <input type="text" id="prompt" name="prompt" required placeholder="Enter your prompt"/>
-                    <input type="submit" value="Submit" />
+            <form method="post" class="job-application-form">
+                <div>
+                    <label for="jobDescription">Job Description:</label>
+                    <textarea id="jobDescription" name="JobDescription" required
+                        placeholder="Paste the job description here..."></textarea>
                 </div>
-                
-                <div class="multi-field-row">
-                    <div class="field-group">
-                        <label for="formality">Formality Level:</label>
-                        <select id="formality" name="Formality">
-                            <option value="casual">Casual</option>
-                            <option value="formal">Formal</option>
-                            <option value="business">Business</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="topic">Topic:</label>
-                        <select id="topic" name="Topic">
-                            <option value="apology">Apology</option>
-                            <option value="proposal">Proposal</option>
-                            <!-- Add other topics as needed -->
-                        </select>
-                    </div>
+                <div>
+                    <label for="resume">Resume (JSON):</label>
+                    <textarea id="resume" name="ResumeJson" required
+                        placeholder="Enter your resume in JSON format..."></textarea>
                 </div>
+                <input type="submit" value="Generate Application Email" />
             </form>
+
 
             @if (Model.Reply != null)
             {
                 <div class="alert">@Model.Reply</div>
             }
-
-            <div class="example-prompts">
-                <a class="nav-link" asp-page="/History">Chat History</a>
-            </div>
         </main>
     </div>
 </body>
+
 </html>

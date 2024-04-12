@@ -3,12 +3,44 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using EfFuncCallSK.Models;
 using Microsoft.SemanticKernel;
+using Newtonsoft.Json;
 
 namespace EfFuncCallSK.Plugins
 {
     public class EmailPlugin
     {
+        [KernelFunction, Description("Generate a job application email")]
+        public static string GenerateJobApplicationEmail(
+        [Description("The job description to base the email on")] string jobDescription,
+        [Description("Resume in JSON format")] string resumeJson)
+        {
+            try
+            {
+                var resume = JsonConvert.DeserializeObject<Resume>(resumeJson);
+                if (resume == null)
+                {
+                    return "Error: Resume data is invalid and could not be parsed.";
+                }
+
+                // Assuming 'resume' is now properly parsed, format the email
+                string emailBody = $"Dear Hiring Manager,\n\n" +
+                                   $"I am excited to apply for the position described in your {jobDescription}. " +
+                                   $"With my skills in {resume.Skills} and my experience including {resume.Experience}, " +
+                                   $"I am confident that I would be a valuable addition to your team.\n\n" +
+                                   $"Please find my detailed resume attached for more information.\n\n" +
+                                   $"Best regards,\n" +
+                                   $"{resume.FullName}";
+
+                return emailBody;
+            }
+            catch (JsonException ex)
+            {
+                return $"Error: Failed to parse resume JSON. {ex.Message}";
+            }
+        }
+
         [KernelFunction, Description("Make the email better")]
         public static string? MakeEmailBetter(
             [Description("The email to improve")]
@@ -34,13 +66,16 @@ namespace EfFuncCallSK.Plugins
             {
                 greeting = "Dear [Recipient],\n\n";
             }
-            else if (formality == "casual") {
+            else if (formality == "casual")
+            {
                 greeting = "How is it going [Recipient],\n\n";
             }
-            else if (formality == "business") {
+            else if (formality == "business")
+            {
                 greeting = "Hello [Recipient],\n\n";
             }
-            else {
+            else
+            {
                 greeting = "Dear [Recipient],\n\n";
             }
 

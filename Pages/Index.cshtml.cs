@@ -7,6 +7,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 using EfFuncCallSK.Models;
+using Newtonsoft.Json;
 public class IndexModel : PageModel
 {
 
@@ -15,9 +16,10 @@ public class IndexModel : PageModel
     private readonly UserManager<IdentityUser> _userManager; // Inject UserManager for user management
     private readonly ChatService _chatService; // Your service for handling chat data
     [BindProperty]
-    public string? Topic { get; set; }
+    public string JobDescription { get; set; }  // Ensure this is bound if not already
+
     [BindProperty]
-    public string? Formality { get; set; }
+    public string ResumeJson { get; set; }
 
     [BindProperty]
     public string? Reply { get; set; }
@@ -42,63 +44,62 @@ public class IndexModel : PageModel
         ChatHistories = await _chatService.GetChatHistoryByUserIdAsync(userId); // Fetch chat history for the user
     }
 
-    public async Task<IActionResult> OnPostAsync(string prompt)
+    public async Task<IActionResult> OnPostAsync()
     {
-        var response = await CallFunction(prompt, Formality, Topic);
+        var response = await CallFunction(JobDescription, ResumeJson);
         Reply = response;
 
-        string userId = _userManager.GetUserId(User); // Get current user's ID
-        await _chatService.SaveChatMessageAsync(prompt, response, userId); // Save the new chat message
+        string userId = _userManager.GetUserId(User);
+        await _chatService.SaveChatMessageAsync(JobDescription, Reply, userId);
 
-        ChatHistories = await _chatService.GetChatHistoryByUserIdAsync(userId); // Refresh chat history
         return Page();
     }
 
-    private async Task<string> CallFunction(string question, string formality, string topic)
+
+    private async Task<string> CallFunction(string jobDescription, string resumeJson)
     {
-        string azEndpoint = _config["AzureOpenAiSettings:Endpoint"]!;
-        string azApiKey = _config["AzureOpenAiSettings:ApiKey"]!;
-        string azModel = _config["AzureOpenAiSettings:Model"]!;
-        string oaiModelType = _config["OpenAiSettings:ModelType"]!;
-        string oaiApiKey = _config["OpenAiSettings:ApiKey"]!;
-        string oaiModel = _config["OpenAiSettings:Model"]!;
-        string oaiOrganization = _config["OpenAiSettings:Organization"]!;
         var builder = Kernel.CreateBuilder();
         if (Service!.ToLower() == "openai")
-            builder.Services.AddOpenAIChatCompletion(oaiModelType, oaiApiKey);
+            builder.Services.AddOpenAIChatCompletion(_config["OpenAiSettings:ModelType"], _config["OpenAiSettings:ApiKey"]);
         else
-            builder.Services.AddAzureOpenAIChatCompletion(azModel, azEndpoint, azApiKey);
+            builder.Services.AddAzureOpenAIChatCompletion(_config["AzureOpenAiSettings:Model"], _config["AzureOpenAiSettings:Endpoint"], _config["AzureOpenAiSettings:ApiKey"]);
 
         builder.Services.AddLogging(c => c.AddDebug().SetMinimumLevel(LogLevel.Trace));
         builder.Plugins.AddFromType<EmailPlugin>();
         var kernel = builder.Build();
 
-        string aiPrompt = $"Based on the context '{question}', generate an email with a '{formality}' formality level about the topic of '{topic}'. Please craft the email accordingly.";
-        // Create chat history
-        Microsoft.SemanticKernel.ChatCompletion.ChatHistory history = [];
-        // Get chat completion service
+        // Set up the chat history to include an invocation of the custom kernel function
+        var history = new Microsoft.SemanticKernel.ChatCompletion.ChatHistory();
+        history.AddUserMessage($"Generate a job application email using the job description: {jobDescription} and resume: {resumeJson}");
+
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
-        // Get user input
-        history.AddUserMessage(aiPrompt);
-        // Enable auto function calling
+
+        // Set execution settings to invoke kernel functions automatically
         OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
         {
             ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
         };
+
+        string fullMessage = "";
         // Get the response from the AI
         var result = chatCompletionService.GetStreamingChatMessageContentsAsync(
-          history,
-          executionSettings: openAIPromptExecutionSettings,
-          kernel: kernel);
-        string fullMessage = "";
+            history,
+            executionSettings: openAIPromptExecutionSettings,
+            kernel: kernel
+        );
+
+        // Process the streamed responses
         await foreach (var content in result)
         {
             fullMessage += content.Content;
         }
+
         // Add the message to the chat history
         history.AddAssistantMessage(fullMessage);
-        return fullMessage ;
+
+        return fullMessage;
     }
+
 
     public async Task<IActionResult> OnGetSearchAsync(string searchTerm)
     {
