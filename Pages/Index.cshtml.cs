@@ -50,7 +50,10 @@ public class IndexModel : PageModel
         Reply = response;
 
         string userId = _userManager.GetUserId(User);
-        await _chatService.SaveChatMessageAsync(JobDescription, Reply, userId);
+        if (userId != null)
+        {
+            await _chatService.SaveChatMessageAsync(JobDescription, Reply, userId);
+        }
 
         return Page();
     }

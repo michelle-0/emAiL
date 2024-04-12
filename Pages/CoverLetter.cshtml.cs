@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using EfFuncCallSK.Data;
@@ -15,72 +16,77 @@ using Newtonsoft.Json;
 
 
 namespace EfFuncCallSK.Pages;
-public class ResumeReviewModel : PageModel
+public class CoverLetterModel : PageModel
 {
     private readonly ILogger<ResumeReviewModel> _logger;
     private readonly IConfiguration _config;
 
     private readonly ApplicationDbContext _context;
-    
+    public Resume Resume { get; set; }
+
+    public JobDescription JobDescription { get; set; }
+
     [BindProperty]
     public string? Reply { get; set; }
-    
+
     [BindProperty]
     public string? Service { get; set; }
 
-    public ResumeReviewModel(ILogger<ResumeReviewModel> logger, IConfiguration config, ApplicationDbContext context)
+    public CoverLetterModel(ILogger<ResumeReviewModel> logger, IConfiguration config, ApplicationDbContext context)
     {
         _logger = logger;
         _config = config;
         _context = context;
         Service = _config["AIService"]!;
+
     }
 
-    public void OnGet()
-    {
-    }
+    //  public void OnGet(string fullName, string email, string experience, string education, string skills, string projects, JobDescription jobDescription)
+    //     {
+    //         Resume = new Resume(fullName, email, experience, education, skills, projects);
+    //         jobDescription = new JobDescription(fullName, email, experience, projects);
+
+    //     }
 
     public async Task<IActionResult> OnPostAsync(
             string fullName,
             string email,
-            string experience, 
-            string education, 
-            string skills, 
-            string projects, 
-            string CompanyName, 
-            string JobTitle, 
-            string jobResponsibilities, 
+            string experience,
+            string education,
+            string skills,
+            string projects,
+            string CompanyName,
+            string JobTitle,
+            string jobResponsibilities,
             string JobRequirements)
+    {
+        var jobDescription = new JobDescription(CompanyName, JobTitle, jobResponsibilities, JobRequirements);
+        var resumeData = new Resume(fullName, email, experience, education, skills, projects);
+
+        var jsonResumeData = JsonConvert.SerializeObject(resumeData);
+        var jsonJobDescription = JsonConvert.SerializeObject(jobDescription);
+
+        var response = await CallFunction(jsonResumeData, jsonJobDescription);
+
+        var coverLetter = new CoverLetter
         {
-            var jobDescription = new JobDescription(CompanyName, JobTitle, jobResponsibilities, JobRequirements);
-            var resumeData = new Resume(fullName, email, experience, education, skills, projects);
+            FullName = fullName,
+            Email = email,
+            CompanyName = CompanyName,
+            JobTitle = JobTitle,
+            Content = response
+        };
+
+        _context.CoverLetters.Add(coverLetter);
+        await _context.SaveChangesAsync();
+
+        Reply = response;
+        return Page();
+    }
 
 
-            var jsonResumeData = JsonConvert.SerializeObject(resumeData);
-            var jsonJobDescription = JsonConvert.SerializeObject(jobDescription);
-
-            var response = await CallFunction(jsonResumeData, jsonJobDescription);
-
-            var newResume = new Resume(fullName, email, experience, education, skills, projects)
-            {
-                JobDescription = jobDescription
-            };
-
-            _context.JobDescriptions.Add(jobDescription);
-
-            // Add the created Resume entity to the Resumes DbSet
-            _context.Resumes.Add(newResume);
-
-            // Save changes to the database
-            await _context.SaveChangesAsync();
-            
-            _logger.LogInformation("Received resume data: {JsonResumeData}", jsonResumeData);
-
-            Reply = response;
-            return Page();
-        }
-
-    private async Task<string> CallFunction(string jsonResume, string jsonJob) {
+    private async Task<string> CallFunction(string jsonResume, string jsonJob)
+    {
         string azEndpoint = _config["AzureOpenAiSettings:Endpoint"]!;
         string azApiKey = _config["AzureOpenAiSettings:ApiKey"]!;
         string azModel = _config["AzureOpenAiSettings:Model"]!;
@@ -94,7 +100,7 @@ public class ResumeReviewModel : PageModel
         else
             builder.Services.AddAzureOpenAIChatCompletion(azModel, azEndpoint, azApiKey);
         builder.Services.AddLogging(c => c.AddDebug().SetMinimumLevel(LogLevel.Trace));
-        builder.Plugins.AddFromType<AdjustResumePlugin>();
+        builder.Plugins.AddFromType<CoverLetterPlugin>();
         var kernel = builder.Build();
 
         var resumeData = JsonConvert.DeserializeObject<Resume>(jsonResume);
@@ -103,6 +109,7 @@ public class ResumeReviewModel : PageModel
         Microsoft.SemanticKernel.ChatCompletion.ChatHistory history = [];
 
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
+
         history.AddUserMessage($"Based on the job description for the {jobDescription.JobTitle} position at {jobDescription.CompanyName}, here are the key requirements:");
 
 
@@ -111,13 +118,12 @@ public class ResumeReviewModel : PageModel
             history.AddUserMessage($"- {requirement}");
         }
 
-        history.AddUserMessage("To tailor my resume for this position, please modify the following sections to better match the key requirements:");
-
         history.AddUserMessage("- Experience");
         history.AddUserMessage("- Skills");
         history.AddUserMessage("- Projects");
 
-        OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new() {
+        OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
+        {
             ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
         };
 
@@ -126,13 +132,12 @@ public class ResumeReviewModel : PageModel
         executionSettings: openAIPromptExecutionSettings,
         kernel: kernel);
         string fullMessage = "";
-        await foreach (var content in result) {
-        fullMessage += content.Content;
+        await foreach (var content in result)
+        {
+            fullMessage += content.Content;
         }
-
 
         history.AddAssistantMessage(fullMessage);
         return fullMessage;
     }
-
 }

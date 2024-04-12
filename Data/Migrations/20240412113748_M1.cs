@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EfFuncCallSK.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class M5 : Migration
+    public partial class M1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,22 @@ namespace EfFuncCallSK.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobDescriptions",
+                columns: table => new
+                {
+                    JobDescriptionId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CompanyName = table.Column<string>(type: "TEXT", nullable: false),
+                    JobTitle = table.Column<string>(type: "TEXT", nullable: false),
+                    JobResponsibilities = table.Column<string>(type: "TEXT", nullable: false),
+                    JobRequirements = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobDescriptions", x => x.JobDescriptionId);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,6 +194,55 @@ namespace EfFuncCallSK.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "CoverLetters",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FullName = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    CompanyName = table.Column<string>(type: "TEXT", nullable: false),
+                    JobTitle = table.Column<string>(type: "TEXT", nullable: false),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    JobDescriptionId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CoverLetters", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CoverLetters_JobDescriptions_JobDescriptionId",
+                        column: x => x.JobDescriptionId,
+                        principalTable: "JobDescriptions",
+                        principalColumn: "JobDescriptionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Resumes",
+                columns: table => new
+                {
+                    ResumeId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FullName = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    Experiences = table.Column<string>(type: "TEXT", nullable: false),
+                    Education = table.Column<string>(type: "TEXT", nullable: false),
+                    Skills = table.Column<string>(type: "TEXT", nullable: false),
+                    Projects = table.Column<string>(type: "TEXT", nullable: false),
+                    JobDescriptionId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Resumes", x => x.ResumeId);
+                    table.ForeignKey(
+                        name: "FK_Resumes_JobDescriptions_JobDescriptionId",
+                        column: x => x.JobDescriptionId,
+                        principalTable: "JobDescriptions",
+                        principalColumn: "JobDescriptionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -219,6 +284,16 @@ namespace EfFuncCallSK.Data.Migrations
                 name: "IX_ChatHistories_UserId",
                 table: "ChatHistories",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CoverLetters_JobDescriptionId",
+                table: "CoverLetters",
+                column: "JobDescriptionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Resumes_JobDescriptionId",
+                table: "Resumes",
+                column: "JobDescriptionId");
         }
 
         /// <inheritdoc />
@@ -243,10 +318,19 @@ namespace EfFuncCallSK.Data.Migrations
                 name: "ChatHistories");
 
             migrationBuilder.DropTable(
+                name: "CoverLetters");
+
+            migrationBuilder.DropTable(
+                name: "Resumes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "JobDescriptions");
         }
     }
 }

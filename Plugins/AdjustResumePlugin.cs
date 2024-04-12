@@ -3,48 +3,45 @@ using System.Text.Json;
 using EfFuncCallSK.Models;
 using Microsoft.SemanticKernel;
 
-namespace EfFuncCallSK.Plugins;
-public class AdjustResumePlugin
+namespace EfFuncCallSK.Plugins
 {
-    [KernelFunction, Description("Get all resume details")]
-    public static string? GetResumeDetails(
-        [Description("applicant's full name, e.g. Kim Jane Wexler")] string fullName,
-        [Description("applicant's email, e.g. kimjwexler@gmail.com")] string email,
-        [Description("applicant's experience e.g. Software Developer at Fortinet May 2020 to December 2020, responsible for transitioning company to new testing software")] string experience,
-        [Description("applicant's education, e.g. Diploma in Computer Systems Technology")] string education,
-        [Description("applicant's skills, e.g. Java, C#, Python, JavaScript, mySQL, RESTful")] string skills,
-        [Description("applicant's projects, e.g. Developed an AI web application using ASP.NET Core where I learned agile development, implemented MVC pattern and CICD")] string projects
-    )
+    public class AdjustResumePlugin
     {
-        var resume = new Resume
+            [KernelFunction, Description("Get all resume details")]
+            public static string? GetResumeDetails(
+            [Description("applicant's full name, e.g. Kim Jane Wexler")] string fullName,
+            [Description("applicant's email, e.g. kimjwexler@gmail.com")] string email,
+            [Description("applicant's previous work experiences")] string experiences,
+            [Description("applicant's education, e.g. Diploma in Computer Systems Technology")] string education,
+            [Description("applicant's technical and applicable skills, e.g. Java, C#, Python, JavaScript, mySQL, RESTful")] string skills,
+            [Description("applicant's projects that demonstrate their skills and abilities")] string projects
+        )
         {
-            FullName = fullName,
-            Email = email,
-            Experience = experience,
-            Education = education,
-            Skills = skills,
-            Projects = projects,
-        };
-        var jsonResume = JsonSerializer.Serialize(resume);
+            var db = Utils.GetDbContext();
+            var resume = db.Resumes
+                .Where(r => r.FullName == fullName && r.Email == email && r.Experiences == experiences && r.Education == education && r.Skills == skills && r.Projects == projects)
+                .FirstOrDefault();
 
-        return jsonResume;
-    }
+            var jsonResume = JsonSerializer.Serialize(resume);
+            return jsonResume;
+        }
 
+        [KernelFunction, Description("Get the job description details")]
+        public static string? GetJobDescription(
+            [Description("company name, e.g. Fortinet")] string companyName,
+            [Description("job title, e.g. Software Developer")] string jobTitle,
+            [Description("job description which states the applicant will do at the job")] string jobDescription,
+            [Description("job requirements which states what skills and experiences this role will need")] string jobRequirements
+        )
+        {
+            var db = Utils.GetDbContext();
+            var jobDescriptionDetails = db.JobDescriptions
+                .Where(j => j.CompanyName == companyName && j.JobTitle == jobTitle && j.JobResponsibilities == jobDescription && j.JobRequirements == jobRequirements)
+                .FirstOrDefault();
 
-    [KernelFunction, Description("Get the job description details")]
-    public static string? GetJobDescription(
-    [Description("company name, e.g. Fortinet")] string companyName,
-    [Description("job title, e.g. Software Developer")] string jobTitle,
-    [Description("job description, e.g. Develop software solutions by studying information needs, conferring with users, and studying systems flow, data usage, and work processes.")] string jobResponsibilities,
-    [Description("job requirements, e.g. A degree in Computer Science or related field, 3+ years of experience in software development, experience with Java, C#, Python, JavaScript, mySQL, RESTful")] string jobRequirements,
-    [Description("company values, e.g. Integrity, Innovation, Collaboration, Customer Focus")] string companyValues
-)
-    {
-        var db = Utils.GetDbContext();
-        var jobDescriptionDetails = db.JobDescriptions
-        .Where(j => j.CompanyName == companyName && j.JobTitle == jobTitle).FirstOrDefault();
-        if (jobDescriptionDetails == null)
-            return null;
-        return jobDescriptionDetails.ToString();
+            if (jobDescriptionDetails == null)
+                return null;
+            return jobDescriptionDetails.ToString();
+        }
     }
 }

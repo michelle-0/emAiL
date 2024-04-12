@@ -5,14 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace EfFuncCallSK.Models;
-public class Resume
+public class Resume(string fullName, string email, string experiences, string education, string skills, string projects)
 {
     [Key]
-    public int Id { get; set; }
-    public string FullName { get; set; }
-    public string Email { get; set; }
-    public string Experience { get; set; }
-    public string Education { get; set; }
-    public string Skills { get; set; }
-    public string Projects { get; set; }
+    public int ResumeId { get; set; }
+    public string FullName { get; set; } = fullName;
+    public string Email { get; set; } = email;
+
+    public string Experiences { get; set; } = experiences;
+    public string Education { get; set; } = education;
+    public string Skills { get; set; } = skills;
+
+    public string Projects { get; set; } = projects;
+    public JobDescription JobDescription { get; set; }
 }
