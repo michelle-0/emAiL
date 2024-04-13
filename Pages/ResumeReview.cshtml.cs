@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EfFuncCallSK.Data;
 using EfFuncCallSK.Models;
 using EfFuncCallSK.Plugins;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,6 +16,8 @@ using Newtonsoft.Json;
 
 
 namespace EfFuncCallSK.Pages;
+
+[Authorize]
 public class ResumeReviewModel : PageModel
 {
     private readonly ILogger<ResumeReviewModel> _logger;

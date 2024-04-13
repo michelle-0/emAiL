@@ -1,15 +1,73 @@
 @page
-@model EfFuncCallSK.Pages.ResumeList
+@model EfFuncCallSK.Pages.ResumeListModel
 @{
     ViewData["Title"] = "ResumeList";
 }
-
-@{
-    ViewData["Title"] = "ResumeList";
-}
-
 <h1>Previous Resumes</h1>
+<head>
+<style>
+        body {
+            background: linear-gradient(to right, #9bd3f8, #e9ff6d); 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
+        .form-wrapper {
+            display: flex;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(182, 172, 172, 0.1);
+        }
+
+        .form-column {
+            width: 48%; 
+        }
+
+        form {
+            min-width: 1500px;
+            margin: 0 auto;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            color: #f3d5d5;
+        }
+
+        input[type="submit"] {
+            background-color: #08578b; 
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #4ba6ef; 
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .alert-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+    </style>
+    </head>
 <table class="table">
     <thead>
         <tr>
@@ -19,14 +77,13 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var resume in Model.resumes)
+        @foreach (var resume in Model.ResumeList)
         {
             <tr>
                 <td>@resume.ResumeId</td>
                 <td>@resume.FullName</td>
                 <td>
-                    <a asp-page="ViewResume" asp-route-id="@resume.ResumeId">View Resume</a> |
-                    <a asp-page="View Job Description" asp-route-id="@resume.JobDescription.JobDescriptionId">View Cover Letter</a>
+                    <a asp-page="ViewResume" asp-route-id="@resume.ResumeId">View Resume</a>
                 </td>
             </tr>
             <tr>
@@ -47,10 +104,11 @@
                                 <td>@resume.JobDescription.CompanyName</td>
                                 <td>@resume.JobDescription.JobTitle</td>
                                 <td>
-                                    <a asp-page="ViewApplication" asp-route-id="@resume.JobDescription.JobDescriptionId">View Application</a>
+                                    <a asp-page="ViewApplication"
+                                        asp-route-id="@resume.JobDescription.JobDescriptionId">View Application</a>
                                 </td>
                             </tr>
-        
+
                         </tbody>
                     </table>
                 </td>

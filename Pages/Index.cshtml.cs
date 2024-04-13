@@ -9,9 +9,11 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 using EfFuncCallSK.Models;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize]
 public class IndexModel : PageModel
 {
-
     private readonly ILogger<IndexModel> _logger;
     private readonly IConfiguration _config;
     private readonly UserManager<IdentityUser> _userManager; // Inject UserManager for user management

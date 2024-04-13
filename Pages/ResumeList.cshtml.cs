@@ -7,25 +7,33 @@ using EfFuncCallSK.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 namespace EfFuncCallSK.Pages;
-    public class ResumeList : PageModel
-    {
-        
-private readonly ApplicationDbContext _context;
-        private readonly ILogger<ResumeList> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
-        public List<Resume> resumes { get; set; }
-        public ResumeList(ILogger<ResumeList> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
-        {
-            _logger = logger;
-            _context = context;
-            _userManager = userManager;
-        }
 
-        public void OnGet()
-        {
-            resumes = _context.Resumes
-            .Where(r => r.Email == _userManager.GetUserName(User))
-            .ToList();  
-        }
+[Authorize]
+public class ResumeListModel : PageModel
+{
+
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<ResumeListModel> _logger;
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public ResumeListModel(ILogger<ResumeListModel> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    {
+        _context = context;
+        _logger = logger;
+        _userManager = userManager;
     }
+
+    public IList<Resume> ResumeList { get; set; }
+
+    public async Task OnGetAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        ResumeList = await _context.Resumes
+            .Include(r => r.JobDescription) // Include JobDescription when querying for Resumes
+            .Where(r => r.Email == user.Email) // Filter Resumes by user's email
+            .ToListAsync();
+    }
+}
