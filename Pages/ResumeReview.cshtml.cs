@@ -90,7 +90,7 @@ public class ResumeReviewModel : PageModel
         string azApiKey = _config["AzureOpenAiSettings:ApiKey"]!;
         string azModel = _config["AzureOpenAiSettings:Model"]!;
         string oaiModelType = _config["OpenAiSettings:ModelType"]!;
-        string oaiApiKey = _config["OpenAiSettings:ApiKey"]!;
+        string? oaiApiKey = Environment.GetEnvironmentVariable("API_KEY");
         string oaiModel = _config["OpenAiSettings:Model"]!;
         string oaiOrganization = _config["OpenAiSettings:Organization"]!;
         var builder = Kernel.CreateBuilder();
