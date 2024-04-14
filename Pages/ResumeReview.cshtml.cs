@@ -6,6 +6,7 @@ using EfFuncCallSK.Data;
 using EfFuncCallSK.Models;
 using EfFuncCallSK.Plugins;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,6 +25,7 @@ public class ResumeReviewModel : PageModel
     private readonly IConfiguration _config;
 
     private readonly ApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
     
     [BindProperty]
     public string? Reply { get; set; }
@@ -31,12 +33,13 @@ public class ResumeReviewModel : PageModel
     [BindProperty]
     public string? Service { get; set; }
 
-    public ResumeReviewModel(ILogger<ResumeReviewModel> logger, IConfiguration config, ApplicationDbContext context)
+    public ResumeReviewModel(ILogger<ResumeReviewModel> logger, IConfiguration config, ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
         _logger = logger;
         _config = config;
         _context = context;
         Service = _config["AIService"]!;
+        _userManager = userManager;
     }
 
     public void OnGet()
@@ -58,7 +61,8 @@ public class ResumeReviewModel : PageModel
             var jobDescription = new JobDescription(CompanyName, JobTitle, jobResponsibilities, JobRequirements);
             var resumeData = new Resume(fullName, email, experience, education, skills, projects)
             {
-                JobDescription = jobDescription
+                JobDescription = jobDescription,
+                userId = _userManager.GetUserId(User)
             };
 
             var jsonResumeData = JsonConvert.SerializeObject(resumeData);

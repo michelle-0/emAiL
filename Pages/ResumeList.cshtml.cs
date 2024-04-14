@@ -31,9 +31,13 @@ public class ResumeListModel : PageModel
     public async Task OnGetAsync()
     {
         var user = await _userManager.GetUserAsync(User);
-        ResumeList = await _context.Resumes
-            .Include(r => r.JobDescription) // Include JobDescription when querying for Resumes
-            .Where(r => r.Email == user.Email) // Filter Resumes by user's email
-            .ToListAsync();
+
+        if (user != null)
+        {
+            ResumeList = await _context.Resumes
+                .Include(r => r.JobDescription)
+                .Where(r => r.userId == user.Id)
+                .ToListAsync();
+        }
     }
 }

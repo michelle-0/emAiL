@@ -10,6 +10,7 @@ public class Resume(string fullName, string email, string experiences, string ed
 {
     [Key]
     public int ResumeId { get; set; }
+    public string userId { get; set; }
     public IdentityUser User { get; set; }
     public string FullName { get; set; } = fullName;
     public string Email { get; set; } = email;

@@ -4,93 +4,142 @@
 @{
     ViewData["Title"] = "Chat History";
 }
-
 <style>
-    .chat-history {
-        margin-top: 20px;
-        min-height: 370px;
-    }
+        .container {
+            display: block;
+            margin-bottom: 5px;
+        }
 
-    .chat-history ul {
-        list-style-type: none;
-        padding: 0;
-    }
+        .header {
+            text-align: center;
+        }
 
-    .chat-history li {
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 10px;
-    }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
 
-    .chat-history li .stuff {
-        margin-top: 10px;
-    }
+        input[type="text"],
+        select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-    .stuff {
-        margin-top: 10px;
-    }
+        input[type="submit"] {
+            padding: 10px 15px;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-    body {
-        background: linear-gradient(to right, #9bd3f8, #e9ff6d);
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        color: #333;
-    }
+        input[type="submit"]:hover {
+            background-color: #cac9c9;
+        }
 
-    .form-wrapper {
-        display: flex;
-        justify-content: space-between;
-        background-color: rgba(255, 255, 255, 0.9);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
+        .example-prompts {
+            text-align: left;
+            margin-top: 30px;
+        }
 
-    .form-column {
-        width: 48%;
-    }
+        .nav-link {
+            color: #337ab7;
+            text-decoration: none;
+        }
 
-    form {
-        min-width: 1500px;
-        margin: 0 auto;
-    }
+        .nav-link:hover {
+            text-decoration: underline;
+        }
 
-    input[type="text"],
-    textarea {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
-        color: #333;
-    }
+        .alert {
+            padding: 15px;
+            background-color: #dff0d8;
+            color: #3c763d;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
 
-    input[type="submit"] {
-        background-color: #08578b;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+         body {
+            background: linear-gradient(to right, #9bd3f8, #e9ff6d); 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
-    input[type="submit"]:hover {
-        background-color: #4ba6ef;
-    }
+        .form-wrapper {
+            display: flex;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-    .alert {
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
-    }
+        .form-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
 
-    .alert-success {
-        background-color: #2ecc71;
-        color: white;
-    }
-</style>
+        .form-row>label {
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .form-row>input[type="text"],
+        .form-row>select {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-row>input[type="submit"] {
+            margin: 0;
+        }
+
+        .multi-field-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .field-group {
+            flex-basis: 48%;
+        }
+
+        input[type="text"],
+        select {
+            margin-bottom: 0;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 40%;
+            padding: 10px;
+            height: 60px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        input[type="submit"] {
+            background-color: #08578b; 
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+         .alert-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+    </style>
 <h3 class="display-6">@ViewData["Title"]</h3>
 
 <form method="get">
