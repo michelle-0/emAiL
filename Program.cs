@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EfFuncCallSK.Data;
+using dotenv.net;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
+DotEnv.Load();
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -44,6 +46,13 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate();
+}
+
+var openAiSettings = builder.Configuration.GetSection("OpenAiSettings");
+var apiKey = Environment.GetEnvironmentVariable("API_KEY");
+if (!string.IsNullOrEmpty(apiKey))
+{
+    openAiSettings["ApiKey"] = apiKey;
 }
 
 app.Run();

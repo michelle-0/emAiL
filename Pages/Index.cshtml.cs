@@ -9,9 +9,11 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 using EfFuncCallSK.Models;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+
+[Authorize]
 public class IndexModel : PageModel
 {
-
     private readonly ILogger<IndexModel> _logger;
     private readonly IConfiguration _config;
     private readonly UserManager<IdentityUser> _userManager; // Inject UserManager for user management
@@ -62,9 +64,10 @@ public class IndexModel : PageModel
 
     private async Task<string> CallFunction(string jobDescription, string resumeJson)
     {
+        string? oaiApiKey = Environment.GetEnvironmentVariable("API_KEY");
         var builder = Kernel.CreateBuilder();
         if (Service!.ToLower() == "openai")
-            builder.Services.AddOpenAIChatCompletion(_config["OpenAiSettings:ModelType"], _config["OpenAiSettings:ApiKey"]);
+            builder.Services.AddOpenAIChatCompletion(_config["OpenAiSettings:ModelType"], oaiApiKey);
         else
             builder.Services.AddAzureOpenAIChatCompletion(_config["AzureOpenAiSettings:Model"], _config["AzureOpenAiSettings:Endpoint"], _config["AzureOpenAiSettings:ApiKey"]);
 

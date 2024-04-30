@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using EfFuncCallSK.Data;
 using EfFuncCallSK.Models;
 using EfFuncCallSK.Plugins;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,12 +17,15 @@ using Newtonsoft.Json;
 
 
 namespace EfFuncCallSK.Pages;
+
+[Authorize]
 public class ResumeReviewModel : PageModel
 {
     private readonly ILogger<ResumeReviewModel> _logger;
     private readonly IConfiguration _config;
 
     private readonly ApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
     
     [BindProperty]
     public string? Reply { get; set; }
@@ -28,12 +33,13 @@ public class ResumeReviewModel : PageModel
     [BindProperty]
     public string? Service { get; set; }
 
-    public ResumeReviewModel(ILogger<ResumeReviewModel> logger, IConfiguration config, ApplicationDbContext context)
+    public ResumeReviewModel(ILogger<ResumeReviewModel> logger, IConfiguration config, ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
         _logger = logger;
         _config = config;
         _context = context;
         Service = _config["AIService"]!;
+        _userManager = userManager;
     }
 
     public void OnGet()
@@ -55,7 +61,8 @@ public class ResumeReviewModel : PageModel
             var jobDescription = new JobDescription(CompanyName, JobTitle, jobResponsibilities, JobRequirements);
             var resumeData = new Resume(fullName, email, experience, education, skills, projects)
             {
-                JobDescription = jobDescription
+                JobDescription = jobDescription,
+                userId = _userManager.GetUserId(User)
             };
 
             var jsonResumeData = JsonConvert.SerializeObject(resumeData);
@@ -83,7 +90,7 @@ public class ResumeReviewModel : PageModel
         string azApiKey = _config["AzureOpenAiSettings:ApiKey"]!;
         string azModel = _config["AzureOpenAiSettings:Model"]!;
         string oaiModelType = _config["OpenAiSettings:ModelType"]!;
-        string oaiApiKey = _config["OpenAiSettings:ApiKey"]!;
+        string? oaiApiKey = Environment.GetEnvironmentVariable("API_KEY");
         string oaiModel = _config["OpenAiSettings:Model"]!;
         string oaiOrganization = _config["OpenAiSettings:Organization"]!;
         var builder = Kernel.CreateBuilder();

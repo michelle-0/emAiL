@@ -3,7 +3,6 @@ using CsvHelper;
 using EfFuncCallSK.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
 namespace EfFuncCallSK.Data;
 
 public class ApplicationDbContext : IdentityDbContext // Assuming you have an ApplicationUser class
@@ -25,9 +24,10 @@ public class ApplicationDbContext : IdentityDbContext // Assuming you have an Ap
               .HasConstraintName("ForeignKey_ChatHistory_User");
         });
         modelBuilder.Entity<Resume>(entity =>
-            {
-                entity.HasOne(r => r.JobDescription);
-            });
+        {
+            entity.HasOne(r => r.JobDescription);
+            entity.HasOne(r => r.User);
+        });
     }
 
     public DbSet<ChatHistory> ChatHistories { get; set; }

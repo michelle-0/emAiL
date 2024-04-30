@@ -1,60 +1,107 @@
 @page
-@model EfFuncCallSK.Pages.ResumeList
+@model EfFuncCallSK.Pages.ResumeListModel
 @{
     ViewData["Title"] = "ResumeList";
 }
-
-@{
-    ViewData["Title"] = "ResumeList";
-}
-
 <h1>Previous Resumes</h1>
+<style>
+    .table {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Resume ID</th>
-            <th>Full Name</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var resume in Model.resumes)
-        {
+.table th,
+.table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.table td {
+    background-color: #ffffff;
+}
+
+.sub-table {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+.sub-table th,
+.sub-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.sub-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.sub-table td {
+    background-color: #ffffff;
+}
+
+.sub-table-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+</style>
+
+<body>
+    <h1>Resume and Job Applications</h1>
+
+    <table class="table">
+        <thead>
             <tr>
-                <td>@resume.ResumeId</td>
-                <td>@resume.FullName</td>
-                <td>
-                    <a asp-page="ViewResume" asp-route-id="@resume.ResumeId">View Resume</a> |
-                    <a asp-page="View Job Description" asp-route-id="@resume.JobDescription.JobDescriptionId">View Cover Letter</a>
-                </td>
+                <th>Resume ID</th>
+                <th>Full Name</th>
+                <th>Projects</th>
+                <th>Experiences</th>
+                <th>Education</th>
+                <th>Skills</th>
             </tr>
-            <tr>
-                <td colspan="3">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Application ID</th>
-                                <th>Company Name</th>
-                                <th>Job Title</th>
-                                <th>Application Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>@resume.JobDescription.JobDescriptionId</td>
-                                <td>@resume.JobDescription.CompanyName</td>
-                                <td>@resume.JobDescription.JobTitle</td>
-                                <td>
-                                    <a asp-page="ViewApplication" asp-route-id="@resume.JobDescription.JobDescriptionId">View Application</a>
-                                </td>
-                            </tr>
-        
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var resume in Model.ResumeList)
+            {
+                <tr>
+                    <td>@resume.ResumeId</td>
+                    <td>@resume.FullName</td>
+                    <td>@resume.Projects</td>
+                    <td>@resume.Experiences</td>
+                    <td>@resume.Education</td>
+                    <td>@resume.Skills</td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div class="sub-table-label">This resume is for the job:</div>
+                        <table class="sub-table">
+                            <thead>
+                                <tr>
+                                    <th>Company Name</th>
+                                    <th>Job Title</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@resume.JobDescription.CompanyName</td>
+                                    <td>@resume.JobDescription.JobTitle</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
